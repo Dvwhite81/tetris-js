@@ -47,7 +47,9 @@ const updateBoard = (grid) => {
 
       if (!cell.classList.contains('set')) {
         const square = grid[x][y];
-        if (square.class !== 'none') {
+        if (square.class === 'none') {
+          cell.className = 'cell';
+        } else {
           cell.classList.add(square.class);
         }
       }
@@ -55,7 +57,7 @@ const updateBoard = (grid) => {
   }
 };
 
-const setPiecePlaced = (coords) => {
+const setBoardPlaced = (coords) => {
   for (const coord of coords) {
     const [x, y] = coord;
     if (x >= 0 && y >= 0) {
@@ -140,7 +142,7 @@ export {
   openGameStartModal,
   openLevelOverModal,
   resetDom,
-  setPiecePlaced,
+  setBoardPlaced,
   setUpNextContainer,
   updateBoard,
   updateNextContainer,

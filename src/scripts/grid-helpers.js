@@ -1,4 +1,4 @@
-import { updateBoard } from './dom-helpers';
+import { setBoardPlaced, updateBoard } from './dom-helpers';
 
 const ROWS = 20;
 const COLUMNS = 10;
@@ -51,10 +51,10 @@ const placePiece = (piece, grid) => {
   updateBoard(grid);
 };
 
-const removePiece = (piece, grid, squareClass) => {
+const removePiece = (piece, grid) => {
   const { coords } = piece;
   removeFromGrid(coords, grid);
-  updateBoard(grid, squareClass);
+  updateBoard(grid);
 };
 
 const addToGrid = (piece, grid) => {
@@ -122,9 +122,24 @@ const getNextCoords = (piece, direction) => {
   return nextCoords;
 };
 
+const setPiecePlaced = (piece, grid) => {
+  const { coords } = piece;
+  const { length } = coords;
+  for (let i = 0; i < length; i++) {
+    const [x, y] = coords[i];
+    console.log('[x, y]:', [x, y]);
+    if (x >= 0) {
+      const square = grid[x][y];
+      console.log('square:', square);
+      square.set = true;
+    }
+  }
+  setBoardPlaced(coords);
+};
+
 const getBottomCoords = (piece) => {
   console.log('bottom piece:', piece);
   return piece;
 };
 
-export { coordsAreValid, getFirstCoords, getInitialGrid, getNextCoords, placePiece, removePiece };
+export { coordsAreValid, getFirstCoords, getInitialGrid, getNextCoords, placePiece, removePiece, setPiecePlaced };

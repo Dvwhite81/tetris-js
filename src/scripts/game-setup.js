@@ -3,12 +3,19 @@ import {
   openGameOverModal,
   openLevelOverModal,
   resetDom,
-  setPiecePlaced,
   setUpNextContainer,
   updateNextContainer,
   updateScoreContainer
 } from './dom-helpers';
-import { coordsAreValid, getFirstCoords, getInitialGrid, getNextCoords, placePiece, removePiece } from './grid-helpers';
+import {
+  coordsAreValid,
+  getFirstCoords,
+  getInitialGrid,
+  getNextCoords,
+  placePiece,
+  removePiece,
+  setPiecePlaced
+} from './grid-helpers';
 import { PIECES } from './piece-helpers';
 
 let ID, score, level, lines, speed, grid, moveIsOver, levelIsOver, gameIsOver, currentPiece, nextPieces;
@@ -46,14 +53,32 @@ const firstMove = () => {
     console.log('firstMove VALID');
     currentPiece.coords = coords;
     placePiece(currentPiece, grid);
+    continueMove();
   } else {
     endGame();
   }
 };
 
+const continueMove = () => {
+  setTimeout(() => {
+    const nextCoords = getNextCoords(currentPiece, 'down');
+    if (coordsAreValid(nextCoords, grid)) {
+      removePiece(currentPiece, grid);
+      currentPiece.coords = nextCoords;
+      placePiece(currentPiece, grid);
+      continueMove();
+    } else {
+      endMove();
+    }
+  }, speed);
+};
+
 const startNextMove = () => {};
 
 const endMove = () => {
+  // Need to set piece placed
+  console.log('endMove currentPiece:', currentPiece);
+  setPiecePlaced(currentPiece, grid);
   getNewPiece();
   firstMove();
 };
