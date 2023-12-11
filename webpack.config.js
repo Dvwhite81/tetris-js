@@ -56,10 +56,7 @@ module.exports = {
 			},
 			{
 				test: /\.(png|jpg|jpeg|gif|svg)$/i,
-				loader: 'file-loader',
-				options: {
-					outputPath: 'assets'
-				}
+				type: 'asset/resource'
 			},
 			{
 				test: /\.(woff|woff2|eot|ttf|otf)$/i,

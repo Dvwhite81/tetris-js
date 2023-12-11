@@ -1,7 +1,7 @@
 {
-  "name": "checkers",
+  "name": "tetris",
   "version": "1.0.0",
-  "description": "Basic checkers game",
+  "description": "Basic tetris game",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --open --node-env development",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dvwhite81/checkers.git"
+    "url": "git+https://github.com/Dvwhite81/tetris.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Dvwhite81/checkers/issues"
+    "url": "https://github.com/Dvwhite81/tetris/issues"
   },
-  "homepage": "https://github.com/Dvwhite81/checkers#readme",
+  "homepage": "https://github.com/Dvwhite81/tetris#readme",
   "devDependencies": {
     "@babel/core": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
