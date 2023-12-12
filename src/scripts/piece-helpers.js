@@ -114,13 +114,41 @@ const getNextPieces = () => {
 };
 
 const rotatePiece = (piece) => {
-  const { shape } = piece;
-  const coords = [];
-  for (const coord of shape) {
-    [coord.x, coord.y] = [coord.y, coord.x];
-    coords.push(coord);
+  // Find bottom-most coord (if two, left-most one)
+  // const { shape, coords } = piece;
+  const { coords } = piece;
+  const lowest = getLowestCoord(coords);
+  console.log('lowest:', lowest);
+  /*
+  const { length } = coords;
+  const newCoords = [];
+
+  for (let i = 0; i < length; i++) {
+    const sCoord = shape[i];
+    const cCoord = coords[i];
+
+    [sCoord.x, sCoord.y] = [sCoord.y, sCoord.x];
+    [sCoord.x, sCoord.y] = [sCoord.x + cCoord[0], sCoord.y + cCoord[1]];
+    newCoords.push([sCoord.x, sCoord.y]);
   }
-  piece.shape = coords;
+
+  return newCoords;
+  */
+};
+
+const getLowestCoord = (coords) => {
+  const { length } = coords;
+  let lowestCoords = coords[0];
+  let lowestX = lowestCoords[0];
+
+  for (let i = 1; i < length; i++) {
+    const x = coords[i][0];
+    if (x < lowestX) {
+      lowestX = x;
+      lowestCoords = coords[i];
+    }
+  }
+  return lowestCoords;
 };
 
 export { getNextPieces, getRandomPiece, PIECES, rotatePiece };

@@ -13,7 +13,6 @@ const getInitialGrid = () => {
     }
     grid.push(row);
   }
-  console.log('getInitialGrid grid:', grid);
   return grid;
 };
 
@@ -26,7 +25,6 @@ const getFirstCoords = (piece) => {
     const x = coord.x + startX;
     const y = coord.y + startY;
     coords.push([x, y]);
-    console.log('coords:', coords);
   }
 
   piece.coords = coords;
@@ -46,7 +44,6 @@ const coordsAreValid = (coords, grid) => {
 };
 
 const placePiece = (piece, grid) => {
-  console.log('placePiece grid:', grid);
   addToGrid(piece, grid);
   updateBoard(grid);
 };
@@ -60,17 +57,10 @@ const removePiece = (piece, grid) => {
 const addToGrid = (piece, grid) => {
   const { coords, squareClass } = piece;
   const { length } = coords;
-  console.log('addToGrid grid:', grid);
-  console.log('addToGrid coords:', coords);
   for (let i = 0; i < length; i++) {
     const [x, y] = coords[i];
-    console.log('addToGrid coords[i]:', coords[i]);
-    console.log('addToGrid [x, y]:', [x, y]);
     if (x >= 0) {
-      console.log('addToGrid x >= 0');
-      console.log('grid[x][y]:', grid[x][y]);
       grid[x][y].class = squareClass;
-      console.log('AFTER grid:', grid);
     }
   }
 };
@@ -109,10 +99,6 @@ const getNextCoords = (piece, direction) => {
         newY = y + 1;
         break;
       }
-      case 'bottom': {
-        [newX, newY] = getBottomCoords(piece);
-        break;
-      }
       default: {
         break;
       }
@@ -127,19 +113,41 @@ const setPiecePlaced = (piece, grid) => {
   const { length } = coords;
   for (let i = 0; i < length; i++) {
     const [x, y] = coords[i];
-    console.log('[x, y]:', [x, y]);
     if (x >= 0) {
       const square = grid[x][y];
-      console.log('square:', square);
       square.set = true;
     }
   }
   setBoardPlaced(coords);
 };
 
-const getBottomCoords = (piece) => {
-  console.log('bottom piece:', piece);
-  return piece;
+const getBottomCoords = (piece, grid) => {
+  const { coords } = piece;
+  let bottom = false;
+  let bottomCoords = coords;
+  while (!bottom) {
+    console.log('loop');
+    let nextCoords = [];
+    for (const coord of bottomCoords) {
+      const [x, y] = coord;
+      nextCoords.push([x + 1, y]);
+    }
+    if (coordsAreValid(nextCoords, grid)) {
+      bottomCoords = nextCoords;
+    } else {
+      bottom = true;
+    }
+  }
+  return bottomCoords;
 };
 
-export { coordsAreValid, getFirstCoords, getInitialGrid, getNextCoords, placePiece, removePiece, setPiecePlaced };
+export {
+  coordsAreValid,
+  getBottomCoords,
+  getFirstCoords,
+  getInitialGrid,
+  getNextCoords,
+  placePiece,
+  removePiece,
+  setPiecePlaced
+};

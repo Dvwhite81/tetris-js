@@ -9,6 +9,7 @@ import {
 } from './dom-helpers';
 import {
   coordsAreValid,
+  getBottomCoords,
   getFirstCoords,
   getInitialGrid,
   getNextCoords,
@@ -16,7 +17,7 @@ import {
   removePiece,
   setPiecePlaced
 } from './grid-helpers';
-import { PIECES } from './piece-helpers';
+import { PIECES, rotatePiece } from './piece-helpers';
 
 let ID, score, level, lines, speed, grid, moveIsOver, levelIsOver, gameIsOver, currentPiece, nextPieces;
 
@@ -25,7 +26,7 @@ const setUpGame = () => {
   score = 0;
   level = 1;
   lines = 10;
-  speed = 100;
+  speed = 1000;
   grid = getInitialGrid();
   moveIsOver = false;
   levelIsOver = false;
@@ -41,19 +42,16 @@ const setUpGame = () => {
 };
 
 const startGame = () => {
-  console.log('startGame');
-  firstMove();
+  startMove();
 };
 
-const firstMove = () => {
-  console.log('firstMove');
+const startMove = () => {
   const coords = getFirstCoords(currentPiece);
-  console.log('firstMove coords:', coords);
   if (coordsAreValid(coords, grid)) {
-    console.log('firstMove VALID');
     currentPiece.coords = coords;
     placePiece(currentPiece, grid);
     continueMove();
+    addKeyListeners();
   } else {
     endGame();
   }
@@ -62,25 +60,26 @@ const firstMove = () => {
 const continueMove = () => {
   setTimeout(() => {
     const nextCoords = getNextCoords(currentPiece, 'down');
-    if (coordsAreValid(nextCoords, grid)) {
-      removePiece(currentPiece, grid);
-      currentPiece.coords = nextCoords;
-      placePiece(currentPiece, grid);
-      continueMove();
-    } else {
-      endMove();
-    }
+    movePiece(nextCoords);
   }, speed);
 };
 
-const startNextMove = () => {};
+const movePiece = (nextCoords) => {
+  if (coordsAreValid(nextCoords, grid)) {
+    removePiece(currentPiece, grid);
+    currentPiece.coords = nextCoords;
+    placePiece(currentPiece, grid);
+    continueMove();
+  } else {
+    endMove();
+  }
+};
 
 const endMove = () => {
   // Need to set piece placed
-  console.log('endMove currentPiece:', currentPiece);
   setPiecePlaced(currentPiece, grid);
   getNewPiece();
-  firstMove();
+  startMove();
 };
 
 const getRandomPiece = () => {
@@ -89,8 +88,6 @@ const getRandomPiece = () => {
   piece.coords = [];
   piece.id = ID;
   ID++;
-  console.log('piece.id:', piece.id);
-  console.log('getRandom piece:', piece);
   return piece;
 };
 
@@ -120,6 +117,54 @@ const endGame = () => {
 const resetGame = () => {
   resetDom();
   setUpGame();
+};
+
+const addKeyListeners = () => {
+  document.addEventListener('keydown', handleKeyPress);
+};
+
+const handleKeyPress = (e) => {
+  console.log('keyPress');
+  const { key } = e;
+  if (!keyIsValid(key)) {
+    return;
+  }
+  let newCoords;
+
+  switch (key) {
+    case 'ArrowLeft': {
+      newCoords = getNextCoords(currentPiece, 'left');
+      break;
+    }
+    case 'ArrowRight': {
+      newCoords = getNextCoords(currentPiece, 'right');
+      break;
+    }
+    case 'ArrowDown': {
+      console.log('down');
+      newCoords = getBottomCoords(currentPiece, grid);
+      break;
+    }
+    case 'ArrowUp': {
+      newCoords = rotatePiece(currentPiece);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+  if (coordsAreValid(newCoords, grid)) {
+    removePiece(currentPiece, grid);
+    currentPiece.coords = newCoords;
+    placePiece(currentPiece, grid);
+  } else {
+    return;
+  }
+};
+
+const keyIsValid = (key) => {
+  const valid = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+  return valid.includes(key);
 };
 
 export { resetGame, setUpGame, startNextLevel };
