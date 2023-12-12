@@ -26,7 +26,7 @@ const setUpGame = () => {
   score = 0;
   level = 1;
   lines = 10;
-  speed = 1000;
+  speed = 2000;
   grid = getInitialGrid();
   moveIsOver = false;
   levelIsOver = false;
@@ -124,7 +124,6 @@ const addKeyListeners = () => {
 };
 
 const handleKeyPress = (e) => {
-  console.log('keyPress');
   const { key } = e;
   if (!keyIsValid(key)) {
     return;
@@ -141,7 +140,6 @@ const handleKeyPress = (e) => {
       break;
     }
     case 'ArrowDown': {
-      console.log('down');
       newCoords = getBottomCoords(currentPiece, grid);
       break;
     }

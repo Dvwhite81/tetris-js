@@ -20,7 +20,6 @@ const getFirstCoords = (piece) => {
   const { shape, height } = piece;
   const coords = [];
   const [startX, startY] = [0 - (height - 1), 4];
-
   for (const coord of shape) {
     const x = coord.x + startX;
     const y = coord.y + startY;
@@ -126,7 +125,6 @@ const getBottomCoords = (piece, grid) => {
   let bottom = false;
   let bottomCoords = coords;
   while (!bottom) {
-    console.log('loop');
     let nextCoords = [];
     for (const coord of bottomCoords) {
       const [x, y] = coord;
