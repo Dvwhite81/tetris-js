@@ -1,3 +1,5 @@
+import { COLUMNS, ROWS } from './grid-helpers';
+
 const domSetup = () => {
   const inner = document.querySelector('#board-inner');
   const board = buildBoard();
@@ -18,7 +20,7 @@ const buildBoard = () => {
 export const buildRows = () => {
   const rows = [];
 
-  for (let x = 0; x < 20; x++) {
+  for (let x = 0; x < ROWS; x++) {
     const row = buildRow(x);
     rows.push(row);
   }
@@ -38,7 +40,7 @@ const buildRow = (x) => {
 
 const buildCells = (x) => {
   const cells = [];
-  for (let y = 0; y < 10; y++) {
+  for (let y = 0; y < COLUMNS; y++) {
     const cell = buildCell(x, y);
     cells.push(cell);
   }

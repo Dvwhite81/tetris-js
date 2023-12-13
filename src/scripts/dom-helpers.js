@@ -1,5 +1,5 @@
 import { buildRows } from './dom-setup';
-import { resetGame, setUpGame, startNextLevel } from './game-setup';
+import { resetGame, setUpGame } from './game';
 
 const updateScoreContainer = (score, level, lines) => {
   const scoreDisplay = document.querySelector('#score');
@@ -40,34 +40,7 @@ const buildPiece = (piece) => {
   return pieceElement;
 };
 
-const updateBoard = (grid) => {
-  for (let x = 0; x < 20; x++) {
-    for (let y = 0; y < 10; y++) {
-      const cell = document.querySelector(`#cell-${x}-${y}`);
-
-      if (!cell.classList.contains('set')) {
-        const square = grid[x][y];
-        if (square.class === 'none') {
-          cell.className = 'cell';
-        } else {
-          cell.classList.add(square.class);
-        }
-      }
-    }
-  }
-};
-
-const setBoardPlaced = (coords) => {
-  for (const coord of coords) {
-    const [x, y] = coord;
-    if (x >= 0 && y >= 0) {
-      const cell = document.querySelector(`#cell-${x}-${y}`);
-      cell.classList.add('set');
-    }
-  }
-};
-
-const resetDom = () => {
+const resetBoard = () => {
   const board = document.querySelector('#board');
   board.innerHTML = '';
   const rows = buildRows();
@@ -88,10 +61,15 @@ const openModal = (content) => {
   const btn = document.querySelector('#modal-submit');
   btn.textContent = content.btn;
 
-  btn.addEventListener('click', () => {
-    closeModal();
-    content.func();
-  });
+  btn.addEventListener(
+    'click',
+    (e) => {
+      e.preventDefault();
+      closeModal();
+      content.func();
+    },
+    { once: true }
+  );
   modal.style.display = 'flex';
 };
 
@@ -113,12 +91,13 @@ const openGameStartModal = () => {
 };
 
 const openLevelOverModal = (level, lines) => {
+  console.log('openLevelOverModal');
   const content = {
     h2: 'Level Complete!',
     p1: `Ready For Level ${level}?`,
     p2: `Get ${lines} Lines To Move On!`,
     btn: 'START',
-    func: startNextLevel
+    func: setUpGame
   };
 
   openModal(content);
@@ -141,10 +120,8 @@ export {
   openGameOverModal,
   openGameStartModal,
   openLevelOverModal,
-  resetDom,
-  setBoardPlaced,
+  resetBoard,
   setUpNextContainer,
-  updateBoard,
   updateNextContainer,
   updateScoreContainer
 };

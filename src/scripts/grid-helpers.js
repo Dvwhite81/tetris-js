@@ -1,4 +1,4 @@
-import { setBoardPlaced, updateBoard } from './dom-helpers';
+import { addBottomHover, removeBottomHover, setBoardPlaced, updateBoard } from './board-helpers';
 
 const ROWS = 20;
 const COLUMNS = 10;
@@ -17,9 +17,9 @@ const getInitialGrid = () => {
 };
 
 const getFirstCoords = (piece) => {
-  const { shape, height } = piece;
+  const { shape } = piece;
   const coords = [];
-  const [startX, startY] = [0 - (height - 1), 4];
+  const [startX, startY] = [0, 4];
   for (const coord of shape) {
     const x = coord.x + startX;
     const y = coord.y + startY;
@@ -30,27 +30,32 @@ const getFirstCoords = (piece) => {
   return coords;
 };
 
-const coordsAreValid = (coords, grid) => {
+const singleCoordIsValid = (coord, grid) => {
   let valid = true;
-
-  for (const coord of coords) {
-    const [x, y] = coord;
-    if (x >= 0 && (x >= ROWS || y >= COLUMNS || grid[x][y].set === true)) {
-      valid = false;
-    }
+  const [x, y] = coord;
+  // console.log('singleCoordsIsValid coord:', coord);
+  if (x < 0 || x >= ROWS || y < 0 || y >= COLUMNS || grid[x][y].set === true) {
+    valid = false;
   }
   return valid;
+};
+
+const coordsAreValid = (coords, grid) => {
+  return coords.every((coord) => singleCoordIsValid(coord, grid));
 };
 
 const placePiece = (piece, grid) => {
   addToGrid(piece, grid);
   updateBoard(grid);
+  const bottomCoords = getBottomCoords(piece, grid);
+  addBottomHover(bottomCoords);
 };
 
 const removePiece = (piece, grid) => {
   const { coords } = piece;
   removeFromGrid(coords, grid);
   updateBoard(grid);
+  removeBottomHover();
 };
 
 const addToGrid = (piece, grid) => {
@@ -109,6 +114,7 @@ const getNextCoords = (piece, direction) => {
 
 const setPiecePlaced = (piece, grid) => {
   const { coords } = piece;
+  console.log('setPiecePlaced coords:', coords);
   const { length } = coords;
   for (let i = 0; i < length; i++) {
     const [x, y] = coords[i];
@@ -139,7 +145,41 @@ const getBottomCoords = (piece, grid) => {
   return bottomCoords;
 };
 
+const clearSquare = (square) => {
+  square.set = false;
+  square.class = 'none';
+};
+
+const clearRow = (x, grid) => {
+  for (let y = 0; y < COLUMNS; y++) {
+    const square = grid[x][y];
+    clearSquare(square);
+  }
+};
+
+const moveAboveSquareDown = (x, y, grid) => {
+  let square = grid[x][y];
+  let squareAbove = grid[x - 1][y];
+  square.set = squareAbove.set;
+  square.class = squareAbove.class;
+  clearSquare(squareAbove);
+};
+
+const removeRowFromGrid = (row, grid) => {
+  if (row === 0) {
+    return;
+  }
+
+  for (let x = row; x > 0; x--) {
+    for (let y = 0; y < COLUMNS; y++) {
+      moveAboveSquareDown(x, y, grid);
+    }
+  }
+};
+
 export {
+  clearRow,
+  COLUMNS,
   coordsAreValid,
   getBottomCoords,
   getFirstCoords,
@@ -147,5 +187,8 @@ export {
   getNextCoords,
   placePiece,
   removePiece,
-  setPiecePlaced
+  removeRowFromGrid,
+  ROWS,
+  setPiecePlaced,
+  singleCoordIsValid
 };

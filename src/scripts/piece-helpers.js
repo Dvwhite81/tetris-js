@@ -1,92 +1,36 @@
+import { coordsAreValid, singleCoordIsValid } from './grid-helpers';
 import { iPatterns, jPatterns, lPatterns, oPatterns, sPatterns, tPatterns, zPatterns } from './shape-helpers';
 
-// To rotate through patterns:
-// piece.currentShape = (piece.currentShape + 1) % piece.patterns.length;
-// piece.pattern = piece.patterns[piece.currentShape]
-// Might need to change "this.patterns[0]" to (o, s, z...)Patterns[0]
-const PIECES = [
-  {
-    name: 'O',
-    patterns: oPatterns,
-    shape: oPatterns[0],
-    currentShape: 0,
-    height: 2,
-    width: 2,
-    squareClass: 'O-square',
-    pieceClass: 'O-piece',
-    coords: []
-  },
-  {
-    name: 'S',
-    patterns: sPatterns,
-    shape: sPatterns[0],
-    currentShape: 0,
-    height: 2,
-    width: 3,
-    squareClass: 'S-square',
-    pieceClass: 'S-piece',
-    coords: []
-  },
-  {
-    name: 'Z',
-    patterns: zPatterns,
-    shape: zPatterns[0],
-    currentShape: 0,
-    height: 2,
-    width: 3,
-    squareClass: 'Z-square',
-    pieceClass: 'Z-piece',
-    coords: []
-  },
-  {
-    name: 'L',
-    patterns: lPatterns,
-    shape: lPatterns[0],
-    currentShape: 0,
-    height: 3,
-    width: 2,
-    squareClass: 'L-square',
-    pieceClass: 'L-piece',
-    coords: []
-  },
-  {
-    name: 'J',
-    patterns: jPatterns,
-    shape: jPatterns[0],
-    currentShape: 0,
-    height: 3,
-    width: 2,
-    squareClass: 'J-square',
-    pieceClass: 'J-piece',
-    coords: []
-  },
-  {
-    name: 'I',
-    patterns: iPatterns,
-    shape: iPatterns[0],
-    currentShape: 0,
-    height: 4,
-    width: 1,
-    squareClass: 'I-square',
-    pieceClass: 'I-piece',
-    coords: []
-  },
-  {
-    name: 'T',
-    patterns: tPatterns,
-    shape: tPatterns[0],
-    currentShape: 0,
-    height: 2,
-    width: 3,
-    squareClass: 'T-square',
-    pieceClass: 'T-piece',
-    coords: []
-  }
+const pieces = [
+  { name: 'O', patterns: oPatterns, height: 2, width: 2 },
+  { name: 'S', patterns: sPatterns, height: 2, width: 3 },
+  { name: 'Z', patterns: zPatterns, height: 2, width: 3 },
+  { name: 'L', patterns: lPatterns, height: 3, width: 2 },
+  { name: 'J', patterns: jPatterns, height: 3, width: 2 },
+  { name: 'I', patterns: iPatterns, height: 4, width: 1 },
+  { name: 'T', patterns: tPatterns, height: 2, width: 3 }
 ];
 
-const getRandomPiece = () => {
-  const pieceIndex = Math.floor(Math.random() * PIECES.length);
-  return PIECES[pieceIndex];
+class Piece {
+  constructor(name, patterns, height, width, ID) {
+    this.name = name;
+    this.patterns = patterns;
+    this.currentShape = 0;
+    this.shape = this.patterns[this.currentShape];
+    this.height = height;
+    this.width = width;
+    this.squareClass = `${name}-square`;
+    this.pieceClass = `${name}-piece`;
+    this.coords = [];
+    this.id = ID;
+  }
+}
+
+const getRandomPiece = (ID) => {
+  const randomIndex = Math.floor(Math.random() * pieces.length);
+  const randomPiece = pieces[randomIndex];
+  const { name, patterns, height, width } = randomPiece;
+  return new Piece(name, patterns, height, width, ID);
 };
 
 const getNextPieces = () => {
@@ -98,20 +42,28 @@ const getNextPieces = () => {
   return pieces;
 };
 
-const rotatePiece = (piece) => {
-  const differences = getShapeDifference(piece);
-
+const rotatePiece = (piece, grid) => {
+  console.log('rotatePiece');
   const { coords } = piece;
+  if (coords.some((coord) => coord[1] <= 0 || coord[1] >= 19)) {
+    return;
+  }
+  
   const { length } = coords;
+  const differences = getShapeDifference(piece);
   const newCoords = [];
 
   for (let i = 0; i < length; i++) {
     const [x, y] = coords[i];
     console.log('coords[i]:', coords[i]);
     const [diffX, diffY] = [differences[i].x, differences[i].y];
-    newCoords.push([x - diffX, y - diffY]);
+    const resultCoords = [x - diffX, y - diffY];
+    console.log('resultCoords:', resultCoords);
+    newCoords.push(resultCoords);
   }
-  return newCoords;
+  if (coordsAreValid(newCoords, grid)) {
+    return newCoords;
+  }
 };
 
 const getShapeDifference = (piece) => {
@@ -129,4 +81,4 @@ const getShapeDifference = (piece) => {
   return differences;
 };
 
-export { getNextPieces, getRandomPiece, PIECES, rotatePiece };
+export { getNextPieces, getRandomPiece, rotatePiece };
